@@ -1,0 +1,118 @@
+---
+title: "Análisis del salario mínimo en México"
+author: "Fabiola García Rangel"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    number_sections: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(siebanxicor)
+library(dplyr)
+library(plotly)
+library(DT)
+library(stargazer)
+library(openxlsx)
+
+# Este es mi token de Banxico SIE-API:
+
+token="087fdd36bf3aaf77d2861f428a43963a59cac9a8bbfd18e73261eafef0d130c3"
+
+# Activamos el token y hacemos login con Banxico:
+
+setToken(token)
+
+```
+
+# Introducción
+
+En estas notas en línea hacemos un análisis histórico de la evoluación del salario mínimo en México desde el 1 de enero del 2000 al 30 de junio de 2024. Los datos serán importados desde la página de Banxico.
+
+
+# Desarrollo
+
+Importamos los datos:
+
+Salario mínimo general en pesos por día: `SL11298`
+
+```{r}
+# Extracción de datos del salario mínimo general
+salarioMinimo = getSeriesData("SL11298", startDate = "2000-01-01", endDate = "2024-06-30")
+salarioMinimo = as.data.frame(salarioMinimo$SL11298)
+
+# Se formatea la tabla con la función datatable
+salarioMinimoTabla <- datatable(
+  salarioMinimo,
+  options = list(
+    paging = TRUE,      # Activar paginación
+    searching = TRUE,   # Activar búsqueda
+    ordering = TRUE     # Activar ordenamiento
+  )
+)
+# Se imprime la tabla
+salarioMinimoTabla
+
+```
+
+```{r}
+# Ahora, usando la función plot_ly generamos un gráfico de dispersión con los valores del salario mínimo por fecha
+grafico <- plot_ly(
+  x = salarioMinimo$date,
+  y = salarioMinimo$value,
+  mode = "markers", 
+  type = "scatter"
+)
+grafico
+
+```
+## Filtrado con DPLYR
+
+Lo que queremos es una tabla promedio del precio del histórico por fecha del salario mínimo
+
+```{r}
+serieTiemposalarioMinimo=salarioMinimo %>% summarise(salarioMedio=mean(salarioMinimo$value),
+          desvEst=sd(salarioMinimo$value),
+          minimo=min(salarioMinimo$value),
+          maximo=max(salarioMinimo$value))
+serieTiemposalarioMinimo
+```
+
+
+
+```{r}
+# Ahora exportamos nuestro panel a un archivo de Excel:
+write.xlsx(salarioMinimo,"salarioMinimo.xlsx")
+```
+
+
+```{r}
+# Se crea el gráfico de dispersión interactivo con plot_ly
+
+figura1 = salarioMinimo
+figura1 <- plot_ly(
+  data = salarioMinimo,
+  x = ~date,
+  y = ~value,
+  mode = "markers",  # Modo de gráfico de dispersión
+  type = "scatter"
+)
+figura1 = layout(figura1, title = "Valor histórico del salario mínimo en México", 
+                 xaxis = list(title = "Fecha",
+                              rangeslider = list(type = "date")
+                              ),
+                 yaxis = list(title = "Valor por día ($)")
+                 )
+figura1
+
+```
+
+
+# Conclusiones
+
+Lo que se puede observar con este ejercicio, en la parte técnica es que es muy fácil descargar los datos que nos ofrece la página de Banxico, en este caso relacionado con el salario mínimo en México.
+De igual forma, con el análisis de los datos se observa que tuvieron que pasar 15 años para que el valor del salario mínimo se duplicara en el año 2015. Mientras que, a partir de ese momento, en menos de 10 años el salario mínimo ha aumentado en más del 300%.
+Esto puede significar un avance en las medidas para el desarrollo el económico del país, no obstante, este salario sigue siendo insuficiente para cubrir las necesidades básicas de las familias mexicanas.
