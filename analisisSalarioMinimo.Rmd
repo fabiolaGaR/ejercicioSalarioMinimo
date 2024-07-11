@@ -89,7 +89,7 @@ write.xlsx(salarioMinimo,"salarioMinimo.xlsx")
 ```
 
 
-```{r}
+#```{r}
 # Se crea el gráfico de dispersión interactivo con plot_ly
 
 figura1 = salarioMinimo
