@@ -72,19 +72,6 @@ grafico = layout(grafico, title = "Valor histórico del salario mínimo en Méxi
                  )
 grafico
 ```
-## Filtrado con DPLYR
-
-Lo que queremos es una tabla promedio del precio del histórico por fecha del salario mínimo
-
-```{r}
-serieTiemposalarioMinimo=salarioMinimo %>% summarise(salarioMedio=mean(salarioMinimo$value),
-          desvEst=sd(salarioMinimo$value),
-          minimo=min(salarioMinimo$value),
-          maximo=max(salarioMinimo$value))
-serieTiemposalarioMinimo
-```
-
-
 
 ```{r}
 # Ahora exportamos nuestro panel a un archivo de Excel:
@@ -92,30 +79,13 @@ write.xlsx(salarioMinimo,"salarioMinimo.xlsx")
 ```
 
 
-#```{r}
-# Se crea el gráfico de dispersión interactivo con plot_ly
-
-figura1 = salarioMinimo
-figura1 <- plot_ly(
-  data = salarioMinimo,
-  x = ~date,
-  y = ~value,
-  mode = "markers",  # Modo de gráfico de dispersión
-  type = "scatter"
-)
-figura1 = layout(figura1, title = "Valor histórico del salario mínimo en México", 
-                 xaxis = list(title = "Fecha",
-                              rangeslider = list(type = "date")
-                              ),
-                 yaxis = list(title = "Valor por día ($)")
-                 )
-figura1
-
-```
-
-
 # Conclusiones
 
-Lo que se puede observar con este ejercicio, en la parte técnica es que es muy fácil descargar los datos que nos ofrece la página de Banxico, en este caso relacionado con el salario mínimo en México.
-De igual forma, con el análisis de los datos se observa que tuvieron que pasar 15 años para que el valor del salario mínimo se duplicara en el año 2015. Mientras que, a partir de ese momento, en menos de 10 años el salario mínimo ha aumentado en más del 300%.
-Esto puede significar un avance en las medidas para el desarrollo el económico del país, no obstante, este salario sigue siendo insuficiente para cubrir las necesidades básicas de las familias mexicanas.
+Lo que se puede observar con este ejercicio, en la parte técnica es que es muy fácil descargar los datos que nos ofrece la página de Banxico; basta obtener el token de acceso a la base de datos y el código de identificación de la serie que se desea descargar.
+
+De igual forma, con el análisis de los datos se observa que tuvieron que pasar 15 años para que el valor del salario mínimo se duplicara en el año 2015. Mientras que, a partir de ese momento, en menos de 10 años el salario mínimo se ha triplicado.
+
+Esto puede significar un avance en  el desarrollo el económico del país, no obstante, este salario sigue siendo insuficiente para cubrir las necesidades básicas de las familias mexicanas.
+
+# Referencias
+-Banxico. (2024). Salarios Mínimos General Índice Real. <https://www.banxico.org.mx/SieAPIRest/service/v1/series/SL11297>
