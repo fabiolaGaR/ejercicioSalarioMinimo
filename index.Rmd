@@ -66,8 +66,11 @@ grafico <- plot_ly(
   mode = "markers", 
   type = "scatter"
 )
+grafico = layout(grafico, title = "Valor histórico del salario mínimo en México", 
+                 xaxis = list(title = "Fecha"),
+                 yaxis = list(title = "Valor por día ($)")
+                 )
 grafico
-
 ```
 ## Filtrado con DPLYR
 
